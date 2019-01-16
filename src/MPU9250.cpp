@@ -1,10 +1,12 @@
 #include "MPU9250.h"
+#include <wiringPi.h>
+#include <wiringPiI2C.h>
 
 //==============================================================================
 //====== Set of useful function to access acceleration. gyroscope, magnetometer,
 //====== and temperature data
 //==============================================================================
-
+/*
 MPU9250::MPU9250( int8_t csPin, SPIClass &spiInterface, uint32_t spi_freq )
 {
 	// Use hardware SPI communication
@@ -24,20 +26,22 @@ MPU9250::MPU9250( int8_t csPin, SPIClass &spiInterface, uint32_t spi_freq )
     deselect();
 
 }
-MPU9250::MPU9250( uint8_t address, TwoWire &wirePort, uint32_t clock_frequency )
+*/
+MPU9250::MPU9250(uint8_t address, int sda, int scl, uint32_t clock_frequency )
 {
 	_I2Caddr = address;
-	_wire = &wirePort;
-	_spi = NULL;
+	_sda = sda;
+	_scl = scl;
+	//_spi = NULL;
 
 	_interfaceSpeed = clock_frequency;
 
-	_csPin = NOT_SPI;	// Used to tell the library that the sensor is using I2C
+	//_csPin = NOT_SPI;	// Used to tell the library that the sensor is using I2C
 
-	_wire->begin();
-	_wire->setClock(_interfaceSpeed);
+	wiringPiI2CSetup(0x68);
+	//_wire->setClock(_interfaceSpeed);
 }
-
+/*
 void MPU9250::setupMagForSPI()
 {
   // Use slave 4 for talking to the magnetometer
@@ -46,7 +50,7 @@ void MPU9250::setupMagForSPI()
 
   writeByteSPI(36, 0b10000000);   // Enable the multi-master mode
 }
-
+*/
 void MPU9250::getMres()
 {
   switch (Mscale)
@@ -121,7 +125,7 @@ void MPU9250::readAccelData(int16_t * destination)
   destination[2] = ((int16_t)rawData[4] << 8) | rawData[5] ;
 }
 
-
+/*
 void MPU9250::readGyroData(int16_t * destination)
 {
   uint8_t rawData[6];  // x/y/z gyro register data stored here
@@ -133,7 +137,8 @@ void MPU9250::readGyroData(int16_t * destination)
   destination[1] = ((int16_t)rawData[2] << 8) | rawData[3] ;
   destination[2] = ((int16_t)rawData[4] << 8) | rawData[5] ;
 }
-
+*/
+/*
 void MPU9250::readMagData(int16_t * destination)
 {
   // x/y/z gyro register data, ST2 register stored here, must read ST2 at end
@@ -156,7 +161,8 @@ void MPU9250::readMagData(int16_t * destination)
     }
   }
 }
-
+*/
+/*
 int16_t MPU9250::readTempData()
 {
   uint8_t rawData[2]; // x/y/z gyro register data stored here
@@ -165,7 +171,7 @@ int16_t MPU9250::readTempData()
   // Turn the MSB and LSB into a 16-bit value
   return ((int16_t)rawData[0] << 8) | rawData[1];
 }
-
+*/
 // Calculate the time the last update took for use in the quaternion filters
 // TODO: This doesn't really belong in this class.
 void MPU9250::updateTime()
@@ -209,10 +215,12 @@ void MPU9250::initAK8963(float * destination)
   writeByte(AK8963_ADDRESS, AK8963_CNTL, Mscale << 4 | Mmode);
   delay(10);
 
+  /*
   if(_csPin != NOT_SPI)
   {
     setupMagForSPI();
   }
+  */
 }
 
 void MPU9250::initMPU9250()
@@ -291,10 +299,12 @@ void MPU9250::initMPU9250()
   writeByte(_I2Caddr, INT_ENABLE, 0x01);
   delay(100);
 
+  /*
   if(_csPin != NOT_SPI)
   {
     setupMagForSPI();
   }
+*/
 }
 
 

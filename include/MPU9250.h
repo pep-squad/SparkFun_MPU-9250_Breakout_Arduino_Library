@@ -8,8 +8,9 @@
 #ifndef _MPU9250_H_
 #define _MPU9250_H_
 
-#include <SPI.h>
-#include <Wire.h>
+#include <stdint.h>
+#include <wiringPi.h>
+#include <wiringPiI2C.h>
 
 #define SERIAL_DEBUG true
 
@@ -178,7 +179,7 @@
 
 
 #define READ_FLAG 0x80
-#define NOT_SPI -1
+#define NOT_SPI 1
 #define SPI_DATA_RATE 1000000 // 1MHz is the max speed of the MPU-9250
 #define SPI_MODE SPI_MODE3
 
@@ -215,11 +216,13 @@ class MPU9250
     };
 
     
-    TwoWire * _wire;						// Allows for use of various I2C ports
+    //TwoWire * _wire;						// Allows for use of various I2C ports
+    int _sda; //I2C Data Pin WiringPi
+    int _scl; //I2c Clock Pin WiringPi
     uint8_t _I2Caddr = MPU9250_ADDRESS_AD0;	// Use AD0 by default
 
- 	SPIClass * _spi;						// Allows for use of different SPI ports
-    int8_t _csPin; 							// SPI chip select pin
+    //SPIClass * _spi;						// Allows for use of different SPI ports
+    //int8_t _csPin; 							// SPI chip select pin
 
     uint32_t _interfaceSpeed;				// Stores the desired I2C or SPi clock rate
 
@@ -280,8 +283,8 @@ public:
     int16_t accelCount[3];
 
     // Public method declarations
-    MPU9250( int8_t csPin, SPIClass &spiInterface = SPI, uint32_t spi_freq = SPI_DATA_RATE);
-    MPU9250( uint8_t address = MPU9250_ADDRESS_AD0, TwoWire &wirePort = Wire, uint32_t clock_frequency = 100000 );
+    //MPU9250( int8_t csPin, SPIClass &spiInterface = SPI, uint32_t spi_freq = SPI_DATA_RATE);
+    MPU9250( uint8_t address = MPU9250_ADDRESS_AD0, int sda, int scl, uint32_t clock_frequency = 100000 );
     void getMres();
     void getGres();
     void getAres();
@@ -301,7 +304,7 @@ public:
     // TODO: make SPI/Wire private
     uint8_t readBytesSPI(uint8_t, uint8_t, uint8_t *);
     uint8_t readBytesWire(uint8_t, uint8_t, uint8_t, uint8_t *);
-    bool isInI2cMode() { return _csPin == -1; }
+    //bool isInI2cMode() { return _csPin == -1; }
     bool begin();
 };  // class MPU9250
 
