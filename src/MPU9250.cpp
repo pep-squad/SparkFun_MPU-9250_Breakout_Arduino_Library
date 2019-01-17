@@ -707,15 +707,14 @@ void MPU9250::magCalMPU9250(float * bias_dest, float * scale_dest)
   //Serial.println(F("Mag Calibration done!"));
 }
 
-// Wire.h read and write protocols
-/*
+//WriteByte interface
 uint8_t MPU9250::writeByte(uint8_t deviceAddress, uint8_t registerAddress,
                         uint8_t data)
 {
    return writeByteWire(deviceAddress,registerAddress, data);
 
 }
-*/
+
 /*
 uint8_t MPU9250::writeByteSPI(uint8_t registerAddress, uint8_t writeData)
 {
@@ -736,11 +735,12 @@ uint8_t MPU9250::writeByteSPI(uint8_t registerAddress, uint8_t writeData)
   return returnVal;
 }
 */
-/*
+
 uint8_t MPU9250::writeByteWire(uint8_t deviceAddress, uint8_t registerAddress,
                             uint8_t data)
 {
-	_wire->setClock(_interfaceSpeed);			// Reset to the desired speed, in case other devices required a slowdown
+	/*
+	_wire->setClock(_interfaceSpeed);        	// Reset to the desired speed, in case other devices required a slowdown
   	_wire->beginTransmission(deviceAddress);  	// Initialize the Tx buffer
   	_wire->write(registerAddress);      		// Put slave register address in Tx buffer
   	_wire->write(data);                 		// Put data in Tx buffer
@@ -748,30 +748,19 @@ uint8_t MPU9250::writeByteWire(uint8_t deviceAddress, uint8_t registerAddress,
   	// TODO: Fix this to return something meaningful
   	// return NULL; // In the meantime fix it to return the right type
   	return 0;
+	*/
+	wiringPiI2CWriteReg8(deviceAddress,registerAddress,data);
+	return 0;
 }
-*/
-/*
-// Read a byte from given register on device. Calls necessary SPI or I2C
+
+
+// Read a byte from given register on device. Calls necessary I2C
 // implementation. This was configured in the constructor.
 uint8_t MPU9250::readByte(uint8_t deviceAddress, uint8_t registerAddress)
 {
-  if (_csPin != NOT_SPI)
-  {
-    if(deviceAddress == AK8963_ADDRESS)
-    {
-      return readMagByteSPI(registerAddress);
-    }
-    else
-    {
-      return readByteSPI(registerAddress);
-    } 
-  }
-  else
-  {
     return readByteWire(deviceAddress, registerAddress);
-  }
 }
-*/
+
 /*
 uint8_t MPU9250::readMagByteSPI(uint8_t registerAddress)
 {
@@ -820,12 +809,12 @@ uint8_t MPU9250::writeMagByteSPI(uint8_t registerAddress, uint8_t data)
   return 0x00;
 }
 */
-/*
+
 // Read a byte from the given register address from device using I2C
 uint8_t MPU9250::readByteWire(uint8_t deviceAddress, uint8_t registerAddress)
 {
-  uint8_t data; // `data` will store the register data
-
+  uint8_t data = wiringPiI2CReadReg8(deviceAddress,registerAddress);
+  /*
   // Initialize the Tx buffer
   _wire->beginTransmission(deviceAddress);
   // Put slave register address in Tx buffer
@@ -837,9 +826,10 @@ uint8_t MPU9250::readByteWire(uint8_t deviceAddress, uint8_t registerAddress)
   // Fill Rx buffer with result
   data = _wire->read();
   // Return data read from slave register
+  */
   return data;
 }
-*/
+
 
 // Read a byte from the given register address using SPI
 //uint8_t MPU9250::readByteSPI(uint8_t registerAddress)
@@ -847,11 +837,12 @@ uint8_t MPU9250::readByteWire(uint8_t deviceAddress, uint8_t registerAddress)
 //  return writeByteSPI(registerAddress | READ_FLAG, 0xFF /*0xFF is arbitrary*/);
 //}
 
-/*
+
 // Read 1 or more bytes from given register and device using I2C
 uint8_t MPU9250::readBytesWire(uint8_t deviceAddress, uint8_t registerAddress,
                         uint8_t count, uint8_t * dest)
 {
+  /*
   // Initialize the Tx buffer
   _wire->beginTransmission(deviceAddress);
   // Put slave register address in Tx buffer
@@ -869,8 +860,21 @@ uint8_t MPU9250::readBytesWire(uint8_t deviceAddress, uint8_t registerAddress,
   }
 
   return i; // Return number of bytes written
+  */
+  int i = 0;
+  for (i = 0; i< count; i++){
+	int data = wiringPiI2CReadReg8(deviceAddress,registerAddress);
+        if(data == -1){
+	    break;
+        }
+        else{
+            dest[i] = data;
+	    registerAddress = (uint8_t)(registerAddress + 1);
+        }
+  }
+  return i;
 }
-
+/*
 // Select slave IC by asserting CS pin
 void MPU9250::select()
 {
@@ -938,20 +942,21 @@ Serial.println(READ_FLAG | count, HEX);
   */
 //}
 
-/*
+
 uint8_t MPU9250::readBytes(uint8_t deviceAddress, uint8_t registerAddress,
                         uint8_t count, uint8_t * dest)
 {
-  if (_csPin == NOT_SPI)  // Read via I2C
-  {
+  //if (_csPin == NOT_SPI)  // Read via I2C
+  //{
     return readBytesWire(deviceAddress, registerAddress, count, dest);
-  }
-  else  // Read using SPI
-  {
-    return readBytesSPI(registerAddress, count, dest);
-  }
+  //}
+  //else  // Read using SPI
+  //{
+    //return readBytesSPI(registerAddress, count, dest);
+ // }
 }
 
+/*
 bool MPU9250::magInit()
 {
   // Reset registers to defaults, bit auto clears
