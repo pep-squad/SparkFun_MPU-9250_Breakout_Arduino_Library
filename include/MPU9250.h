@@ -218,7 +218,8 @@ class MPU9250
 
     int _sda; //I2C Data Pin WiringPi
     int _scl; //I2c Clock Pin WiringPi
-    uint8_t _I2Caddr = MPU9250_ADDRESS_AD0;	// Use AD0 by default
+    //uint8_t _I2Caddr = MPU9250_ADDRESS_AD0;	// Use AD0 by default
+    int _fd; //fileDescriptor for wiringPiI2C
 
     uint32_t _interfaceSpeed;				// Stores the desired I2C or SPi clock rate
 
@@ -232,12 +233,12 @@ class MPU9250
 
     // 2 for 8 Hz, 6 for 100 Hz continuous magnetometer data read
     uint8_t Mmode = M_8HZ;
-    uint8_t writeByteWire(uint8_t, uint8_t, uint8_t);
-    uint8_t writeByteSPI(uint8_t, uint8_t);
+    uint8_t writeByteWire(int, uint8_t, uint8_t);
+//    uint8_t writeByteSPI(uint8_t, uint8_t);
     uint8_t writeMagByteSPI(uint8_t subAddress, uint8_t data);
     uint8_t readByteSPI(uint8_t subAddress);
     uint8_t readMagByteSPI(uint8_t subAddress);
-    uint8_t readByteWire(uint8_t address, uint8_t subAddress);
+    uint8_t readByteWire(int address, uint8_t subAddress);
     bool magInit();
     void kickHardware();
     void select();
@@ -276,7 +277,7 @@ public:
     int16_t accelCount[3];
 
     // Public method declarations
-    MPU9250( uint8_t address = MPU9250_ADDRESS_AD0, int sda = 7, int scl = 8, uint32_t clock_frequency = 100000 );
+    MPU9250( int fd = -1/*uint8_t address = MPU9250_ADDRESS_AD0*/, int sda = 7, int scl = 8, uint32_t clock_frequency = 100000 );
     void getMres();
     void getGres();
     void getAres();
@@ -290,12 +291,12 @@ public:
     void calibrateMPU9250(float * gyroBias, float * accelBias);
     void MPU9250SelfTest(float * destination);
     void magCalMPU9250(float * dest1, float * dest2);
-    uint8_t writeByte(uint8_t, uint8_t, uint8_t);
-    uint8_t readByte(uint8_t, uint8_t);
-    uint8_t readBytes(uint8_t, uint8_t, uint8_t, uint8_t *);
+    uint8_t writeByte(int, uint8_t, uint8_t);
+    uint8_t readByte(int, uint8_t);
+    uint8_t readBytes(int, uint8_t, uint8_t, uint8_t *);
     // TODO: make SPI/Wire private
-    uint8_t readBytesSPI(uint8_t, uint8_t, uint8_t *);
-    uint8_t readBytesWire(uint8_t, uint8_t, uint8_t, uint8_t *);
+    //uint8_t readBytesSPI(uint8_t, uint8_t, uint8_t *);
+    uint8_t readBytesWire(int, uint8_t, uint8_t, uint8_t *);
     //bool isInI2cMode() { return -1; }
     bool begin();
 };  // class MPU9250
