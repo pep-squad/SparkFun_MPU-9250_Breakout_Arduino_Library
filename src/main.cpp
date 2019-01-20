@@ -1,9 +1,5 @@
 #include "9DOF.h"
 #include <stdio.h>
-#include <iostream>
-#include <string>
-#include <sstream>
-using namespace std;
 
 int main(){
 	NineDOF sensor = NineDOF();
@@ -13,6 +9,8 @@ int main(){
 	while(q != 1){
 		sensor.pollSensor();
 
-		cout << sensor.getVelocityVector() << endl;
+		const float* a = sensor.getAccelerationVector();
+		printf("Accel: %f, %f, %f\n\n",a[0],a[1],a[2]);
 	}
+return 0;
 }
