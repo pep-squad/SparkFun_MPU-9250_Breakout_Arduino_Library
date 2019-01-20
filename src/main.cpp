@@ -1,4 +1,5 @@
 #include "MPU9250.h"
+#include "quaternionFilters.h"
 #include <stdio.h>
 
 int main(){
@@ -52,7 +53,14 @@ int main(){
 	    device.mz = (float)device.magCount[2] * device.mRes
 	               * device.factoryMagCalibration[2] - device.magBias[2];
 
-            printf("Acceleration: %f %f %f\nGyro: %f %f %f\nMagnetometer: %f %f %f \n\n",device.ax,device.ay,device.az,device.gx,device.gy,device.gz,device.mx,device.my,device.mz);
+            printf("Acceleration: %f %f %f\nGyro: %f %f %f\nMagnetometer: %f %f %f \n",device.ax,device.ay,device.az,device.gx,device.gy,device.gz,device.mx,device.my,device.mz);
+
+	    /*Quaternions*/
+	    device.updateTime();
+	    MahonyQuaternionUpdate(device.ax, device.ay, device.az, device.gx * DEG_TO_RAD,device.gy * DEG_TO_RAD, device.gz * DEG_TO_RAD, device.my,device.mx, device.mz, device.deltat);
+
+	    const float* q = getQ();
+	    printf("Quaternion - qA: %f, qx: %f, qy: %f, qz: %f\n\n",q[0],q[1],q[2],q[3]);
 	}
     }
     return 0;

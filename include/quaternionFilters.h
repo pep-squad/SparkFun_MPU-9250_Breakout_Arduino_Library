@@ -1,6 +1,8 @@
 #ifndef _QUATERNIONFILTERS_H_
 #define _QUATERNIONFILTERS_H_
 
+#define DEG_TO_RAD 0.01745
+
 void MadgwickQuaternionUpdate(float ax, float ay, float az, float gx, float gy,
                               float gz, float mx, float my, float mz,
                               float deltat);
