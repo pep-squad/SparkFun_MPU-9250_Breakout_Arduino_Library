@@ -10,7 +10,7 @@
 // intensive---it can be performed on a 3.3 V Pro Mini operating at 8 MHz!
 
 #include "quaternionFilters.h"
-
+#include <cmath>
 // These are the free parameters in the Mahony filter and fusion scheme, Kp
 // for proportional feedback, Ki for integral
 #define Kp 2.0f * 5.0f
