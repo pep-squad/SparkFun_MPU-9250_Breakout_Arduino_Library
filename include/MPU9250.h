@@ -221,16 +221,16 @@ class MPU9250
 
     // TODO: Add setter methods for this hard coded stuff
     // Specify sensor full scale
-    uint8_t Gscale = GFS_250DPS;
-    uint8_t Ascale = AFS_2G;
+    uint8_t Gscale = GFS_500DPS;
+    uint8_t Ascale = AFS_4G;
 
     // Choose either 14-bit or 16-bit magnetometer resolution
     uint8_t Mscale = MFS_16BITS;
 
     // 2 for 8 Hz, 6 for 100 Hz continuous magnetometer data read
-    uint8_t Mmode = M_8HZ;
+    uint8_t Mmode = M_100HZ;
+
     uint8_t writeByteWire(int, uint8_t, uint8_t);
-//    uint8_t writeByteSPI(uint8_t, uint8_t);
     uint8_t writeMagByteSPI(uint8_t subAddress, uint8_t data);
     uint8_t readByteSPI(uint8_t subAddress);
     uint8_t readMagByteSPI(uint8_t subAddress);

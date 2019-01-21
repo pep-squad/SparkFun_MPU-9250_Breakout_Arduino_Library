@@ -9,20 +9,20 @@ NineDOF::NineDOF(){
     int fd_MPU9250 = wiringPiI2CSetup(MPU9250_ADDRESS_AD0);
     int fd_AK8962 = wiringPiI2CSetup(AK8963_ADDRESS);
 
-    delay(1);
+    delay(1000);
 
     device = MPU9250(fd_MPU9250,fd_AK8962);
 
     device.MPU9250SelfTest(device.selfTest);
 
-    delay(1);
+    delay(1000);
 
     /*calibrate and init gyroscope/accel*/
     device.calibrateMPU9250(device.gyroBias,device.accelBias);
     device.initMPU9250();
     device.initAK8963(device.factoryMagCalibration); //calibrate magnitometer
 
-    delay(1);
+    delay(1000);
 
     /*Get sensor resolution*/
     device.getAres();
