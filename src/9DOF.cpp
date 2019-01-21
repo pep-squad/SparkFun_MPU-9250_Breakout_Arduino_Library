@@ -6,12 +6,12 @@
 /*9DOF Constructor*/
 NineDOF::NineDOF(){
 
-    fd_MPU9250 = wiringPiI2CSetup(MPU9250_ADDRESS_AD0);
-    fd_AK8962 = wiringPiI2CSetup(AK8963_ADDRESS);
+    int fd_MPU9250 = wiringPiI2CSetup(MPU9250_ADDRESS_AD0);
+    int fd_AK8962 = wiringPiI2CSetup(AK8963_ADDRESS);
 
     delay(1);
 
-    device = MPU9250(fd,7,8,100000);
+    device = MPU9250(fd_MPU9250,fd_AK8962);
 
     device.MPU9250SelfTest(device.selfTest);
 

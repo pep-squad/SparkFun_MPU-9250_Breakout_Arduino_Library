@@ -216,12 +216,8 @@ class MPU9250
       M_100HZ = 0x06 // 100 Hz continuous magnetometer
     };
 
-    int _sda; //I2C Data Pin WiringPi
-    int _scl; //I2c Clock Pin WiringPi
-    //uint8_t _I2Caddr = MPU9250_ADDRESS_AD0;	// Use AD0 by default
-    int _fd; //fileDescriptor for wiringPiI2C
-
-    uint32_t _interfaceSpeed;				// Stores the desired I2C or SPi clock rate
+    int fd_MPU9250;
+    int fd_AK8962; //fileDescriptor for wiringPiI2C
 
     // TODO: Add setter methods for this hard coded stuff
     // Specify sensor full scale
@@ -277,7 +273,7 @@ public:
     int16_t accelCount[3];
 
     // Public method declarations
-    MPU9250( int fd = -1/*uint8_t address = MPU9250_ADDRESS_AD0*/, int sda = 7, int scl = 8, uint32_t clock_frequency = 100000 );
+    MPU9250(int fd_MPU9250 = -1,int fd_AK8962 = -1);
     void getMres();
     void getGres();
     void getAres();
