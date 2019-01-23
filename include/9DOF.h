@@ -34,6 +34,7 @@ class NineDOF{
 		const float* getAccelerationVector();
 		const float* getMagneticFieldVector();
 		const float* getGravityVector();
+		const float* getZOrientation();
 };
 
 #endif
