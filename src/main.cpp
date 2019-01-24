@@ -7,7 +7,7 @@ int main(){
 	NineDOF sensor = NineDOF();
 std::ofstream file;
 file.open("Rz.csv");
-	for(int i =0;i<10000;i++){
+	for(int i =0;i<100;i++){
 		sensor.pollSensor();
 /*
 		const float* a = sensor.getAccelerationVector();
