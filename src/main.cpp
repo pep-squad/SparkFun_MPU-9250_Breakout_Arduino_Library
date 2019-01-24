@@ -1,10 +1,13 @@
 #include "9DOF.h"
 #include <stdio.h>
+#include <iostream>
+#include <fstream>
 
 int main(){
 	NineDOF sensor = NineDOF();
-
-	for(int i =0;i<50;i++){
+std::ofstream file;
+file.open("Rz.csv");
+	for(int i =0;i<10000;i++){
 		sensor.pollSensor();
 /*
 		const float* a = sensor.getAccelerationVector();
@@ -23,7 +26,9 @@ int main(){
 		printf("Z Angle: %f\n",*z);
 */
  		const float* q = sensor.getQuarternions();
-                printf("Quarternion: %f, %f, %f, %f\n",q[0],q[1],q[2],q[3]);
+                //printf("Quarternion: %f, %f, %f, %f\n",q[0],q[1],q[2],q[3]);
+		file << q[4] << ",";
 	}
+file.close();
 return 0;
 }
