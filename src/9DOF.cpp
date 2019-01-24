@@ -32,12 +32,6 @@ NineDOF::NineDOF(){
 
 void NineDOF::pollSensor(){
 
-float accel_avg[3]; //need to collect 1 hundred samples and average (needed to denoise)
-float gyro_avg[3];
-float mag_avg[3];
-
-
-	for(int i = 0;i<10;i++){
 		/*Check for new data*/
 		if(device.readByte(fd,INT_STATUS) & 0x01){
 
@@ -46,10 +40,10 @@ float mag_avg[3];
 			device.ax = (float)device.accelCount[0] * device.aRes;
 			device.ay = (float)device.accelCount[1] * device.aRes;
 			device.az = (float)device.accelCount[2] * device.aRes;
-
-			accel_avg[0] += device.ax;
-			accel_avg[1] += device.ay;
-			accel_avg[2] += device.az;
+			//printf("Accel RAW: %f %f %f\n",device.ax,device.ay,device.az);
+			accel[0] = device.ax;
+			accel[1] = device.ay;
+			accel[2] = device.az;
 
 			/*Gyro data*/
 			device.readGyroData(device.gyroCount);
@@ -57,9 +51,9 @@ float mag_avg[3];
 			device.gy = (float)device.gyroCount[1] * device.gRes;
 			device.gz = (float)device.gyroCount[2] * device.gRes;
 
-			gyro_avg[0] += device.gx;
-			gyro_avg[1] += device.gy;
-			gyro_avg[2] += device.gz;
+			gyro[0] = device.gx;
+			gyro[1] = device.gy;
+			gyro[2] = device.gz;
 
 			/*Magnetometer*/
 			device.readMagData(device.magCount);
@@ -73,25 +67,26 @@ float mag_avg[3];
 
 		//printf("Acceleration: %f %f %f\nGyro: %f %f %f\nMagnetometer: %f %f %f \n",device.ax,device.ay,device.az,device.gx,device.gy,device.gz,device.mx,device.my,device.mz);
 
-			mag_avg[0] += device.mx;
-			mag_avg[1] += device.my;
-			mag_avg[2] += device.mz;
+			mag[0] = device.mx;
+			mag[1] = device.my;
+			mag[2] = device.mz;
 		}
-	}
+
 
 	/*denoise*/
-	device.ax = accel_avg[0]/100;
-	device.ay = accel_avg[1]/100;
-        device.az = accel_avg[2]/100;
+	/*
+	device.ax = accel_avg[0]; //10.0f;
+	device.ay = accel_avg[1];///10.0f;
+        device.az = accel_avg[2];///10.0f;
 
-	device.gx = gyro_avg[0]/100;
-	device.gy = gyro_avg[1]/100;
-	device.gz = gyro_avg[2]/100;
+	device.gx = gyro_avg[0]/10.0f;
+	device.gy = gyro_avg[1]/10.0f;
+	device.gz = gyro_avg[2]/10.0f;
 
-	device.mx = mag_avg[0]/100;
-	device.my = mag_avg[1]/100;
-	device.mz = mag_avg[2]/100;
-
+	device.mx = mag_avg[0]/10.0f;
+	device.my = mag_avg[1]/10.0f;
+	device.mz = mag_avg[2]/10.0f;
+*/
 	/*Quaternions*/
 	device.updateTime();
 	MadgwickQuaternionUpdate(device.ax, device.ay, device.az, device.gx * DEG_TO_RAD,device.gy * DEG_TO_RAD, device.gz * DEG_TO_RAD, device.my,device.mx, device.mz, device.deltat);
