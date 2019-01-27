@@ -47,7 +47,7 @@ void NineDOF::pollSensor(){
 	float samples = 0.0f;
 	float q_temp[4];
 
-	for(int i = 0;i<50;i++){
+	for(int i = 0;i<25;i++){
 		/*Check for new data*/
 		if(device.readByte(fd,INT_STATUS) & 0x01){
 
