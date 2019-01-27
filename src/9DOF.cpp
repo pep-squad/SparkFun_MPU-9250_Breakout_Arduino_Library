@@ -46,7 +46,7 @@ void NineDOF::pollSensor(){
 
 	float samples = 0.0;
 
-	for(int i = 0;i<10;i++){
+	for(int i = 0;i<1;i++){
 		/*Check for new data*/
 		if(device.readByte(fd,INT_STATUS) & 0x01){
 
@@ -86,7 +86,7 @@ void NineDOF::pollSensor(){
 			mag[1] += device.my;
 			mag[2] += device.mz;
 
-			samples++;
+			samples = 1.0;
 		}
 	}
 
