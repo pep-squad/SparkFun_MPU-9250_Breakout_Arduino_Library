@@ -6,7 +6,7 @@
 int main(){
 	NineDOF sensor = NineDOF();
 std::ofstream file;
-file.open("RzMadgwick90.csv");
+file.open("RzMadgwick90wTin.csv");
 	for(int i =0;i<100;i++){
 		sensor.pollSensor();
 /*
