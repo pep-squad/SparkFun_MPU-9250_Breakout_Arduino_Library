@@ -4,10 +4,12 @@
 #include <stdio.h>
 
 /*9DOF Constructor*/
-NineDOF::NineDOF(){
+NineDOF::NineDOF(int polling_rate){
 
     int fd_MPU9250 = wiringPiI2CSetup(MPU9250_ADDRESS_AD0);
     int fd_AK8962 = wiringPiI2CSetup(AK8963_ADDRESS);
+
+    _polling_rate = polling_rate;
 
     device = MPU9250(fd_MPU9250,fd_AK8962);
 
@@ -47,7 +49,7 @@ void NineDOF::pollSensor(){
 	float samples = 0.0f;
 	float q_temp[4];
 
-	for(int i = 0;i<25;i++){
+	for(int i = 0;i<_polling_rate;i++){
 		/*Check for new data*/
 		if(device.readByte(fd,INT_STATUS) & 0x01){
 
@@ -134,4 +136,4 @@ const float* NineDOF::getVelocityVector(){return velocity;}
 const float* NineDOF::getAccelerationVector(){return accel;}
 const float* NineDOF::getMagneticFieldVector(){return mag;}
 const float* NineDOF::getGravityVector(){return gyro;}
-const float* NineDOF::getZOrientation(){return &quaternion[3];}
+//const float* NineDOF::getZOrientation(){return &quaternion[3];}
