@@ -225,7 +225,7 @@ class MPU9250
     uint8_t Ascale = AFS_16G;
 
     // Choose either 14-bit or 16-bit magnetometer resolution
-    uint8_t Mscale = MFS_16BITS;
+    uint8_t Mscale = MFS_14BITS;
 
     // 2 for 8 Hz, 6 for 100 Hz continuous magnetometer data read
     uint8_t Mmode = M_100HZ;
