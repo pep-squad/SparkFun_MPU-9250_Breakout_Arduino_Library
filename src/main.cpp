@@ -6,7 +6,7 @@
 int main(){
 	NineDOF sensor = NineDOF();
 std::ofstream file;
-file.open("Rz1.csv");
+file.open("Rz.csv");
 	for(int i =0;i<100;i++){
 		sensor.pollSensor();
 /*
@@ -27,7 +27,8 @@ file.open("Rz1.csv");
 */
  		const float* q = sensor.getQuarternions();
                 //printf("Quarternion: %f, %f, %f, %f\n",q[0],q[1],q[2],q[3]);
-		file << q[4] << ",";
+		printf("%f\n",q[3]);
+		//file << q[3];
 	}
 file.close();
 return 0;

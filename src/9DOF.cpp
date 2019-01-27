@@ -31,7 +31,22 @@ NineDOF::NineDOF(){
 }
 
 void NineDOF::pollSensor(){
-for(int i = 0;i<10;i++){
+
+	accel[0] = 0;
+	accel[1] = 0;
+	accel[2] = 0;
+
+	gyro[0] = 0;
+	gyro[1] = 0;
+	gyro[2] = 0;
+
+	mag[0] = 0;
+	mag[1] = 0;
+	mag[2] = 0;
+
+	float samples = 0.0;
+
+	for(int i = 0;i<10;i++){
 		/*Check for new data*/
 		if(device.readByte(fd,INT_STATUS) & 0x01){
 
@@ -70,23 +85,25 @@ for(int i = 0;i<10;i++){
 			mag[0] += device.mx;
 			mag[1] += device.my;
 			mag[2] += device.mz;
-		}
 
+			samples++;
+		}
+	}
 
 	/*denoise*/
 	
-	device.ax = accel[0] / 10.0f;
-	device.ay = accel[1] / 10.0f;
-        device.az = accel[2] /10.0f;
+	device.ax = accel[0] / samples;
+	device.ay = accel[1] / samples;
+        device.az = accel[2] / samples;
 
-	device.gx = gyro[0] /10.0f;
-	device.gy = gyro[1] /10.0f;
-	device.gz = gyro[2] /10.0f;
+	device.gx = gyro[0] / samples;
+	device.gy = gyro[1] / samples;
+	device.gz = gyro[2] / samples;
 
-	device.mx = mag[0] /10.0f;
-	device.my = mag[1] /10.0f;
-	device.mz = mag[2] /10.0f;
-}
+	device.mx = mag[0] / samples;
+	device.my = mag[1] / samples;
+	device.mz = mag[2] / samples;
+
 	/*Quaternions*/
 	device.updateTime();
 	MahonyQuaternionUpdate(device.ax, device.ay, device.az, device.gx * DEG_TO_RAD,device.gy * DEG_TO_RAD, device.gz * DEG_TO_RAD, device.my,device.mx, device.mz, device.deltat);
