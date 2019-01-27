@@ -106,7 +106,7 @@ void NineDOF::pollSensor(){
 
 	/*Quaternions*/
 	device.updateTime();
-	MahonyQuaternionUpdate(device.ax, device.ay, device.az, device.gx * DEG_TO_RAD,device.gy * DEG_TO_RAD, device.gz * DEG_TO_RAD, device.my,device.mx, device.mz, device.deltat);
+	MadgwickQuaternionUpdate(device.ax, device.ay, device.az, device.gx * DEG_TO_RAD,device.gy * DEG_TO_RAD, device.gz * DEG_TO_RAD, device.my,device.mx, device.mz, device.deltat);
 
 	const float* q = getQ();
 	quaternion[0] = q[0];
