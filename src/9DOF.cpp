@@ -9,8 +9,6 @@ NineDOF::NineDOF(){
     int fd_MPU9250 = wiringPiI2CSetup(MPU9250_ADDRESS_AD0);
     int fd_AK8962 = wiringPiI2CSetup(AK8963_ADDRESS);
 
-    delay(1000);
-
     device = MPU9250(fd_MPU9250,fd_AK8962);
 
     device.MPU9250SelfTest(device.selfTest);
@@ -28,10 +26,12 @@ NineDOF::NineDOF(){
     device.getAres();
     device.getGres();
     device.getMres();
+
+    delay(1000);
 }
 
 void NineDOF::pollSensor(){
-
+/*
 	accel[0] = 0;
 	accel[1] = 0;
 	accel[2] = 0;
@@ -43,10 +43,11 @@ void NineDOF::pollSensor(){
 	mag[0] = 0;
 	mag[1] = 0;
 	mag[2] = 0;
+*/
+	float samples = 0.0f;
+	float q_temp[4];
 
-	float samples = 0.0;
-
-	for(int i = 0;i<1;i++){
+	for(int i = 0;i<50;i++){
 		/*Check for new data*/
 		if(device.readByte(fd,INT_STATUS) & 0x01){
 
@@ -55,10 +56,10 @@ void NineDOF::pollSensor(){
 			device.ax = (float)device.accelCount[0] * device.aRes;
 			device.ay = (float)device.accelCount[1] * device.aRes;
 			device.az = (float)device.accelCount[2] * device.aRes;
-			//printf("Accel RAW: %f %f %f\n",device.ax,device.ay,device.az);
-			accel[0] += device.ax;
-			accel[1] += device.ay;
-			accel[2] += device.az;
+			
+			accel[0] = device.ax;
+			accel[1] = device.ay;
+			accel[2] = device.az;
 
 			/*Gyro data*/
 			device.readGyroData(device.gyroCount);
@@ -66,9 +67,9 @@ void NineDOF::pollSensor(){
 			device.gy = (float)device.gyroCount[1] * device.gRes;
 			device.gz = (float)device.gyroCount[2] * device.gRes;
 
-			gyro[0] += device.gx;
-			gyro[1] += device.gy;
-			gyro[2] += device.gz;
+			gyro[0] = device.gx;
+			gyro[1] = device.gy;
+			gyro[2] = device.gz;
 
 			/*Magnetometer*/
 			device.readMagData(device.magCount);
@@ -80,18 +81,14 @@ void NineDOF::pollSensor(){
 			device.mz = (float)device.magCount[2] * device.mRes
 			           * device.factoryMagCalibration[2] - device.magBias[2];
 
-		//printf("Acceleration: %f %f %f\nGyro: %f %f %f\nMagnetometer: %f %f %f \n",device.ax,device.ay,device.az,device.gx,device.gy,device.gz,device.mx,device.my,device.mz);
+			mag[0] = device.mx;
+			mag[1] = device.my;
+			mag[2] = device.mz;
 
-			mag[0] += device.mx;
-			mag[1] += device.my;
-			mag[2] += device.mz;
-
-			samples = 1.0;
-		}
-	}
-
-	/*denoise*/
+			samples = samples + 1.0f;
 	
+	/*denoise*/
+	/*
 	device.ax = accel[0] / samples;
 	device.ay = accel[1] / samples;
         device.az = accel[2] / samples;
@@ -102,23 +99,32 @@ void NineDOF::pollSensor(){
 
 	device.mx = mag[0] / samples;
 	device.my = mag[1] / samples;
-	device.mz = mag[2] / samples;
+	device.mz = mag[2] / samples;*/
 
-	/*Quaternions*/
-	device.updateTime();
-	MahonyQuaternionUpdate(device.ax, device.ay, device.az, device.gx * DEG_TO_RAD,device.gy * DEG_TO_RAD, device.gz * DEG_TO_RAD, device.my,device.mx, device.mz, device.deltat);
+			/*Quaternions*/
+			device.updateTime();
+			MahonyQuaternionUpdate(device.ax, device.ay, device.az, device.gx * DEG_TO_RAD,device.gy * DEG_TO_RAD, device.gz * DEG_TO_RAD, device.my,device.mx, device.mz, device.deltat);
+	
+			/*Summations for sampling*/
+			const float* qtemp = getQ();
+			q_temp[0] += qtemp[0];
+			q_temp[1] += qtemp[1];
+			q_temp[2] += qtemp[2];
+			q_temp[3] += qtemp[3];
+	
+			}
+		}
 
-	const float* q = getQ();
-	quaternion[0] = q[0];
-	quaternion[1] = q[1];
-	quaternion[2] = q[2];
-	quaternion[3] = q[3];
+	//const float* q = getQ();
+	quaternion[0] = q_temp[0] / samples;
+	quaternion[1] = q_temp[1] / samples;
+	quaternion[2] = q_temp[2] / samples;
+	quaternion[3] = q_temp[3] / samples;
 
 	/*Calculate velocity vectors*/
 	velocity[0] = device.ax / device.deltat;
 	velocity[1] = device.ay / device.deltat;
 	velocity[2] = device.az / device.deltat;
-	//printf("Quaternion - qA: %f, qx: %f, qy: %f, qz: %f\n\n",q[0],q[1],q[2],q[3]);
 
 }
 
